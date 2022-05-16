@@ -10,12 +10,23 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _playerHand;
     private static int _playerHP = 20;
     private static int _playerMP = 20;
+
+    [Header("HUD Text")]
     [SerializeField] private Text _playerHPText;
     [SerializeField] private Text _playerMPText;
+
     private static int _playerArmor = 0;
+    private static int _playerResist = 0;
     private static string _attackDirection;
+    private GameObject _respawnPoint;
 
     #region -- GetSet -- 
+
+    public static int PlayerResist
+    {
+        get { return _playerResist; }
+        set { _playerResist = value; }
+    }
 
     public static float PlayerSpeed
     {
@@ -54,14 +65,25 @@ public class Player : MonoBehaviour
     }
     #endregion
 
-    void Update()
+    private void Start()
+    {
+        _respawnPoint = GameObject.FindGameObjectWithTag("Respawn");
+    }
+
+    private void Update()
     {
         BarPrint();
         Run();
         Atack();
 
-        if (_playerHP <= 0) // Убиваем игрока при ХП <= 0
-            Destroy(gameObject);
+        if (_playerHP <= 0)
+            Respawn();
+    }
+
+    private void Respawn() // govno
+    {
+        _playerHP = 5;
+        gameObject.transform.position = _respawnPoint.transform.position;
     }
 
     private void BarPrint()
