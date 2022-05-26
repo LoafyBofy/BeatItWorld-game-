@@ -27,7 +27,7 @@ public class ShopPanel : MonoBehaviour
     {
         _duringHPPotionAmount.text = $"Текущее количество {Consumables.HealthPotion}";
         _duringMPPotionAmount.text = $"Текущее количество {Consumables.ManaPotion}";
-        _GoldAmount.text = $"Золота имеется: {Consumables.Gold}";
+        _GoldAmount.text = $"Золото имеется: {Consumables.Gold}";
     }
 
     private void Buy()

@@ -116,7 +116,7 @@ public class Skills : MonoBehaviour
 
     #endregion
 
-    #region Skills
+    #region SkillsMethods
 
     private void UseFireball()
     {
@@ -144,7 +144,7 @@ public class Skills : MonoBehaviour
     {
         if (Player.PlayerMP >= _rageManaPrice && _rageIsReady == true)
         {
-            PlayerHand.Damage += 10;
+            PlayerWeapon.Damage += 10;
             Player.PlayerMP -= _rageManaPrice;
             _rageIsReady = false;
             Invoke("ChangeDamage", 3.5f);
@@ -155,7 +155,7 @@ public class Skills : MonoBehaviour
     {
         if (Player.PlayerMP >= _accelerationManaPrice && _accelerationIsReady == true)
         {
-            Player.PlayerSpeed += 2;
+            PlayerMove.PlayerSpeed += 2;
             Player.PlayerMP -= _accelerationManaPrice;
             _accelerationIsReady = false;
             Invoke("ChangeSpeed", 1.5f);
@@ -188,13 +188,13 @@ public class Skills : MonoBehaviour
 
     private void ChangeDamage()
     {
-        PlayerHand.Damage -= 10;
+        PlayerWeapon.Damage -= 10;
         Invoke("RageReload", _rageCD);
     }
 
     private void ChangeSpeed()
     {
-        Player.PlayerSpeed -= 2;
+        PlayerMove.PlayerSpeed -= 2;
         Invoke("AccelerationReload", _accelerationCD);
     }
 

@@ -8,7 +8,7 @@ public abstract class ProjectileBase : MonoBehaviour
 
     private void Start()
     {
-        _projectileDirection = Player.AttackDirection;
+        _projectileDirection = Attack.AttackDirection;
 
         if (_projectileDirection == "right" || _projectileDirection == "left")
         {

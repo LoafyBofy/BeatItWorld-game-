@@ -3,47 +3,26 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-
-    private static float _playerSpeed = 3;
-    private static float _attackCD = 0.8f;
-    private bool _attackReady = true;
-    [SerializeField] private GameObject _playerHand;
     private static int _playerHP = 20;
     private static int _playerMP = 20;
+
+    [SerializeField] private float _invulnerabilityTime;
 
     [Header("HUD Text")]
     [SerializeField] private Text _playerHPText;
     [SerializeField] private Text _playerMPText;
 
     private static int _playerArmor = 0;
-    private static int _playerResist = 0;
-    private static string _attackDirection;
-    private GameObject _respawnPoint;
+    private static int _playerMagicResist = 0;
+
+    private Collider2D _collider;
 
     #region -- GetSet -- 
 
-    public static int PlayerResist
+    public static int MagicResist
     {
-        get { return _playerResist; }
-        set { _playerResist = value; }
-    }
-
-    public static float PlayerSpeed
-    {
-        get { return _playerSpeed; }
-        set { _playerSpeed = value; }
-    }
-
-    public static string AttackDirection
-    {
-        get { return _attackDirection; }
-        set { _attackDirection = value; }
-    }
-
-    public static float AttackCD
-    {
-        get { return _attackCD; }
-        set { _attackCD = value; }
+        get { return _playerMagicResist; }
+        set { _playerMagicResist = value; }
     }
 
     public static int PlayerArmor
@@ -67,91 +46,40 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        _respawnPoint = GameObject.FindGameObjectWithTag("Respawn");
+        _collider = gameObject.GetComponent<Collider2D>();
     }
 
     private void Update()
     {
-        BarPrint();
-        Run();
-        Atack();
+        PrintBar();
 
-        if (_playerHP <= 0)
-            Respawn();
     }
 
-    private void Respawn() // govno
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        _playerHP = 5;
-        gameObject.transform.position = _respawnPoint.transform.position;
+        if (collision.gameObject.tag == "Enemy")
+        {
+            _collider.enabled = false;
+            gameObject.GetComponent<PlayerMove>().enabled = false;
+            Invoke("SetColiderTrue", _invulnerabilityTime);
+            Invoke("SetComponentPlayerMoveTrue", _invulnerabilityTime);
+        }
     }
 
-    private void BarPrint()
+    private void PrintBar()
     {
         _playerHPText.text = $"HP: {_playerHP}"; // Отображаем ХП
         _playerMPText.text = $"MP: {_playerMP}"; // Отображаем Ману
     }
 
-    private void Run()
+    private void SetColiderTrue()
     {
-        float hMove = Input.GetAxis("Horizontal");
-        float vMove = Input.GetAxis("Vertical");
-        transform.Translate(new Vector3(hMove, vMove, 0) * _playerSpeed * Time.deltaTime);
+        _collider.enabled = true;
     }
 
-    private void ReloadAttack()
+    private void SetComponentPlayerMoveTrue()
     {
-        _attackReady = true;
+        gameObject.GetComponent<PlayerMove>().enabled = true;
     }
-
-    private void Atack()
-    {
-        if (Input.GetKey(KeyCode.UpArrow))
-        {
-            _attackDirection = "up";
-        }
-        else if (Input.GetKey(KeyCode.DownArrow))
-        {
-            _attackDirection = "down";
-        }
-        else if (Input.GetKey(KeyCode.RightArrow))
-        {
-            _attackDirection = "right";
-        }
-        else if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            _attackDirection = "left";
-        }
-        //----
-        if (Input.GetKeyDown(KeyCode.Space) && _attackReady == true)
-        {
-            if (_attackDirection == "up")
-            {
-                Instantiate(_playerHand, new Vector3(transform.position.x, transform.position.y + 1, 0), new Quaternion());
-                _attackReady = false;
-                Invoke("ReloadAttack", _attackCD);
-            }
-            else if (_attackDirection == "down")
-            {
-                Instantiate(_playerHand, new Vector3(transform.position.x, transform.position.y - 1, 0), new Quaternion());
-                _attackReady = false;
-                Invoke("ReloadAttack", _attackCD);
-            }
-            else if (_attackDirection == "right")
-            {
-                Instantiate(_playerHand, new Vector3(transform.position.x + 1, transform.position.y, 0), new Quaternion(45, 45, 0, 0));
-                _attackReady = false;
-                Invoke("ReloadAttack", _attackCD);
-            }
-            else if (_attackDirection == "left")
-            {
-                Instantiate(_playerHand, new Vector3(transform.position.x - 1, transform.position.y, 0), new Quaternion(45, 45, 0, 0));
-                _attackReady = false;
-                Invoke("ReloadAttack", _attackCD);
-            }
-        }
-    }
-
-    
 }
 

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WizardPanel : MonoBehaviour
+public class SkillExplorePanel : MonoBehaviour
 {
     [Header("SelectedColumText")]
     [SerializeField] private Text[] _selectColumTexts;
@@ -25,6 +25,9 @@ public class WizardPanel : MonoBehaviour
         ExploreSkill();
         SetSkill();
         CheckTextForActiveSkills();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            gameObject.SetActive(false);
     }
     private void SetSkill()
     {
@@ -157,24 +160,31 @@ public class WizardPanel : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             _selectedText++;
+            CorrectValues();
             ChangeColor();
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             _selectedText--;
+            CorrectValues();
             ChangeColor();
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             _selectedText += 2;
+            CorrectValues();
             ChangeColor();
         }
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             _selectedText -= 2;
+            CorrectValues();
             ChangeColor();
         }
+    }
 
+    private void CorrectValues() 
+    {
         if (_selectedText < 1)
             _selectedText = 1;
         if (_selectedText > 8)

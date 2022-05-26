@@ -8,6 +8,10 @@ TagManager:
   - InterationText
   - Fireball
   - StunWave
+  - Artifact
+  - NPC
+  - Teleport
+  - Enemy
   layers:
   - Default
   - TransparentFX

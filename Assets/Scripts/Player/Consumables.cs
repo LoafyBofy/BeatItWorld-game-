@@ -6,9 +6,10 @@ public class Consumables : MonoBehaviour
     private static int _healthPotion = 3;
     private static int _manaPotion = 3;
     private static int _gold = 100;
-    private static int _enchantedIron = 10;
+    private static int _enchantedIron = 20;
     private static int _magicEssence = 30;
 
+    [Header("Texts")]
     [SerializeField] private Text _healthPotionText;
     [SerializeField] private Text _manaPotionText;
 

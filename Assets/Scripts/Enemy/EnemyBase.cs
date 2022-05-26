@@ -2,14 +2,21 @@ using UnityEngine;
 
 public abstract class EnemyBase : MonoBehaviour
 {
+    [Header("Enemy Stats")]
     [SerializeField] protected int _enemyHP;
     [SerializeField] protected int _enemyDamage;
-    [SerializeField] protected int _enemyArmor;
-    [SerializeField] protected int _enemyResist;
-    [SerializeField] protected float _distanceForAggression;
     [SerializeField] protected float _enemySpeed;
+    [SerializeField] protected int _enemyArmor;
+    [SerializeField] protected int _enemyMagicResist;
+
+    [Header("Other Params")]
+    [SerializeField] protected float _distanceForAggression;
+    [SerializeField] private float _invulnerabilityTime;
+    [SerializeField] protected int _punchPower;
+    [SerializeField] protected int _getPunchPower;
 
     private Rigidbody2D _enemyRigidbody;
+    private Collider2D _enemyCollider;
     private Rigidbody2D _playerRigidbody;
     private GameObject _playerObject;
     private float _distanceToPlayer;
@@ -21,6 +28,7 @@ public abstract class EnemyBase : MonoBehaviour
         _enemyRigidbody = GetComponent<Rigidbody2D>();
         _playerObject = GameObject.FindGameObjectWithTag("Player");
         _playerRigidbody = _playerObject.GetComponent<Rigidbody2D>();
+        _enemyCollider = GetComponent<Collider2D>();
         _changedSpeed = _enemySpeed;
     }
 
@@ -44,29 +52,38 @@ public abstract class EnemyBase : MonoBehaviour
             Player.PlayerHP -= countDamage;
 
             if (_playerObject.gameObject.transform.position.x < gameObject.transform.position.x)
-                _playerRigidbody.AddForce(new Vector3(-1, 0, 0) * 200f);
+                _playerRigidbody.AddForce(new Vector3(-1, 0, 0) * _punchPower);
             if (_playerObject.gameObject.transform.position.x > gameObject.transform.position.x)
-                _playerRigidbody.AddForce(new Vector3(1, 0, 0) * 200f);
+                _playerRigidbody.AddForce(new Vector3(1, 0, 0) * _punchPower);
             if (_playerObject.gameObject.transform.position.y < gameObject.transform.position.y)
-                _playerRigidbody.AddForce(new Vector3(0, -1, 0) * 200f);
+                _playerRigidbody.AddForce(new Vector3(0, -1, 0) * _punchPower);
             if (_playerObject.gameObject.transform.position.y > gameObject.transform.position.y)
-                _playerRigidbody.AddForce(new Vector3(0, 1, 0) * 200f);
+                _playerRigidbody.AddForce(new Vector3(0, 1, 0) * _punchPower);
         }
+    }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
         if (collision.gameObject == GameObject.FindGameObjectWithTag("PlayerWeapon"))
         {
-            int countDamage = PlayerHand.Damage - _enemyArmor;
+            int countDamage = PlayerWeapon.Damage - _enemyArmor;
             if (countDamage < 1)
                 countDamage = 1;
             _enemyHP -= countDamage;
+
+            _enemySpeed = 0;
+            _enemyCollider.enabled = false;
+            Invoke("ReturnCollider", _invulnerabilityTime);
+            Invoke("ReturnSpeed", _invulnerabilityTime);
+
             if (_playerObject.gameObject.transform.position.x < gameObject.transform.position.x)
-                _enemyRigidbody.AddForce(new Vector3(1, 0, 0) * 200f);
+                _enemyRigidbody.AddForce(new Vector3(1, 0, 0) * _getPunchPower);
             if (_playerObject.gameObject.transform.position.x > gameObject.transform.position.x)
-                _enemyRigidbody.AddForce(new Vector3(-1, 0, 0) * 200f);
+                _enemyRigidbody.AddForce(new Vector3(-1, 0, 0) * _getPunchPower);
             if (_playerObject.gameObject.transform.position.y < gameObject.transform.position.y)
-                _enemyRigidbody.AddForce(new Vector3(0, 1, 0) * 200f);
+                _enemyRigidbody.AddForce(new Vector3(0, 1, 0) * _getPunchPower);
             if (_playerObject.gameObject.transform.position.y > gameObject.transform.position.y)
-                _enemyRigidbody.AddForce(new Vector3(0, -1, 0) * 200f);
+                _enemyRigidbody.AddForce(new Vector3(0, -1, 0) * _getPunchPower);
             Debug.Log($"Enemy HP: {_enemyHP}");
         }
 
@@ -90,9 +107,14 @@ public abstract class EnemyBase : MonoBehaviour
         _enemySpeed = _changedSpeed;
     }
 
+    private void ReturnCollider()
+    {
+        _enemyCollider.enabled = true;
+    }
+
     private int CountTakenMagicDamage(int takenDamage)
     {
-        int result = takenDamage - _enemyResist;
+        int result = takenDamage - _enemyMagicResist;
         if (result <= 1)
             result = 1;
         return result;
